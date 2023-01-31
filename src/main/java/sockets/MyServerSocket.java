@@ -26,9 +26,20 @@ public class MyServerSocket {
 
             String line = "";
 
-            while(!clientSocket.isClosed()) {
+            while(true) {
+                if(line == null) {
+                    System.out.println("Previous Client disconnected. Waiting for another connection...");
+                    clientSocket = serverSocket.accept();
+                    //create the outputStream to send data to client
+                    outputStream = new PrintWriter(clientSocket.getOutputStream(), true);
+
+                    //Create the input stream
+                    inputStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                }
                 line = inputStream.readLine();
-                if(line == null) continue;
+                if(line == null) {
+                    continue;
+                }
 
                 System.out.println(String.format("Clients says: %s", line));
 
@@ -37,6 +48,9 @@ public class MyServerSocket {
                 }
                 else if(line.equals("Shake")) {
                     outputStream.println("That booty?");
+                }
+                else if(line.equals("Shut down bro")) {
+                    break;
                 }
                 else {
                     outputStream.println("Sorry I don't understand.");
